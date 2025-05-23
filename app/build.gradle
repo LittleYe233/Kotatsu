@@ -113,9 +113,7 @@ dependencies {
 		parsersVersion = System.getProperty('parsersVersionOverride')
 	}
 	//noinspection UseTomlInstead
-	implementation("com.github.KotatsuApp:kotatsu-parsers:$parsersVersion") {
-		exclude group: 'org.json', module: 'json'
-	}
+	implementation(files("../../kotatsu-parsers/build/libs/kotatsu-parsers-1.0.jar"))
 
 	coreLibraryDesugaring libs.desugar.jdk.libs
 	implementation libs.kotlin.stdlib
