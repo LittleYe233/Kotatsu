@@ -15,6 +15,7 @@ import org.koitharu.kotatsu.core.util.PACKERDecoder
 import org.koitharu.kotatsu.parsers.MangaLoaderContext
 import org.koitharu.kotatsu.parsers.config.ConfigKey
 import org.koitharu.kotatsu.parsers.core.PagedMangaParser
+import org.koitharu.kotatsu.parsers.model.ContentRating
 import org.koitharu.kotatsu.parsers.model.Demographic
 import org.koitharu.kotatsu.parsers.model.Manga
 import org.koitharu.kotatsu.parsers.model.MangaChapter
@@ -169,6 +170,7 @@ class DummyParser(context: MangaLoaderContext) :
 	protected open val authorsSelector = "a[href^=\"/author\"]"
 	protected open val tagsSelector = "ul.detail-list > li:nth-child(2) > span:first-child > a"
 	protected open val descSelector = "div.book-intro > #intro-all > p"
+	protected open val nsfwCheckSelector = "input#__VIEWSTATE"
 
 	/**
 	 * @note There is no "section" (such as 单行本, 单话) concept in Kotatsu, so we just collect all chapters.
@@ -461,7 +463,7 @@ class DummyParser(context: MangaLoaderContext) :
 				url = href, // Should be relative
 				publicUrl = href.toAbsoluteUrl(domain), // Should be absolute
 				rating = rating,
-				contentRating = sourceContentRating,
+				contentRating = null, // It can be fetched afterwards. Mark it null temporarily.
 				coverUrl = a.selectFirst("img")?.src(),
 				tags = setOf(),
 				state = null,
@@ -478,6 +480,12 @@ class DummyParser(context: MangaLoaderContext) :
 
 		// altTitles
 		val altTitles = doc.select(altTitleSelector).eachText().toSet()
+
+		// contentRating
+		val contentRating: ContentRating = doc.select(nsfwCheckSelector).let { when (it) {
+			null -> ContentRating.SAFE
+			else -> ContentRating.ADULT
+		} }
 
 		// tags
 		val tags = doc.select(tagsSelector).mapToSet { e ->
@@ -509,6 +517,7 @@ class DummyParser(context: MangaLoaderContext) :
 		// Return all
 		manga.copy(
 			altTitles = altTitles,
+			contentRating = contentRating,
 			tags = tags,
 			state = state,
 			authors = authors.toSet(),
