@@ -840,4 +840,8 @@
 	<string name="hide_from_main_screen">Hide from main screen</string>
 	<string name="changelog">Changelog</string>
 	<string name="changelog_summary">Changes history for recently released versions</string>
+	<string name="collapse">Collapse</string>
+	<string name="expand">Expand</string>
+	<string name="adblock">Block ads in browser</string>
+	<string name="adblock_summary">Block advertisement in the built-in browser (beta)</string>
 </resources>
